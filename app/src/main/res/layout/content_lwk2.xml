@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v4.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="pl.maciej_nowak.lwk.LWK2"
+    tools:showIn="@layout/activity_lwk2"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+        <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/imageOriginal"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp" />
+
+        <TextView
+            android:id="@+id/textOriginal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Image ORIGINAL" />
+
+
+        <ImageView
+            android:id="@+id/imageGray"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"/>
+
+        <TextView
+            android:id="@+id/textGray"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="IMAGE COLORIZED TO GRAY" />
+
+        <ImageView
+            android:id="@+id/imageFilter2D"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp" />
+
+        <TextView
+            android:id="@+id/textFilter2D"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="IMAGE FILTERED" />
+
+        <ImageView
+            android:id="@+id/imageMask"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp" />
+
+        <TextView
+            android:id="@+id/textMask"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="IMAGE WITH OWN MASC" />
+
+        <ImageView
+            android:id="@+id/imageR"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp" />
+
+        <TextView
+            android:id="@+id/textR"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="RED CHANNEL" />
+
+        <ImageView
+            android:id="@+id/imageG"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp" />
+
+        <TextView
+            android:id="@+id/textG"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="GREEN CHANNEL" />
+
+        <ImageView
+            android:id="@+id/imageB"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp" />
+
+        <TextView
+            android:id="@+id/textB"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="BLUE CHANNEL" />
+
+    </LinearLayout>
+
+</android.support.v4.widget.NestedScrollView>
