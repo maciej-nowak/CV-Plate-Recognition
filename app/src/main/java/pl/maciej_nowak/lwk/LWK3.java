@@ -53,6 +53,7 @@ public class LWK3 extends AppCompatActivity {
 
                     loadImage();
                     gaussImage(new Size(45,45));
+                    scaleImage(2, "pyrDown");
 
 
                 } break;
@@ -73,6 +74,20 @@ public class LWK3 extends AppCompatActivity {
         Imgproc.GaussianBlur(image, gaussImage, size, 0);
         OpenCV.saveImage("gaussImage.jpg", gaussImage);
         imageGauss.setImageBitmap(OpenCV.matToBitmap(gaussImage));
+    }
+
+    private void scaleImage(int size, String choose) {
+        Mat scaledImage;
+        if(choose.equals("pyrUp")) {
+            scaledImage = new Mat(image.rows()*size, image.cols()*size, image.type());
+            Imgproc.pyrUp(image, scaledImage, new Size(image.cols()*size, image.rows()*size));
+        }
+        else {
+            scaledImage = new Mat(image.rows()/size, image.cols()/size, image.type());
+            Imgproc.pyrDown(image, scaledImage, new Size(image.cols()/size, image.rows()/size));
+        }
+        OpenCV.saveImage("scaledImage.jpg", scaledImage);
+        imageScaled.setImageBitmap(OpenCV.matToBitmap(scaledImage));
     }
 
 }
