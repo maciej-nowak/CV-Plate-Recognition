@@ -23,6 +23,10 @@
         <activity
             android:name=".LWK2"
             android:label="@string/title_activity_lwk2"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".LWK3"
+            android:label="@string/title_activity_lwk3"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

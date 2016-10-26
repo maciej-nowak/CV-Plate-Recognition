@@ -30,6 +30,13 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        lwk3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, LWK3.class);
+                startActivity(intent);
+            }
+        });
     }
 
 
