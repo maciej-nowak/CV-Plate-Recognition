@@ -10,6 +10,8 @@ import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
+import org.opencv.core.Size;
+import org.opencv.imgproc.Imgproc;
 
 public class LWK3 extends AppCompatActivity {
 
@@ -50,6 +52,7 @@ public class LWK3 extends AppCompatActivity {
                 case LoaderCallbackInterface.SUCCESS: {
 
                     loadImage();
+                    gaussImage(new Size(45,45));
 
 
                 } break;
@@ -63,6 +66,13 @@ public class LWK3 extends AppCompatActivity {
     private void loadImage() {
         image = OpenCV.loadImage("image.jpg");
         imageOriginal.setImageBitmap(OpenCV.matToBitmap(image));
+    }
+
+    private void gaussImage(Size size) {
+        Mat gaussImage = new Mat(image.rows(), image.cols(), image.type());
+        Imgproc.GaussianBlur(image, gaussImage, size, 0);
+        OpenCV.saveImage("gaussImage.jpg", gaussImage);
+        imageGauss.setImageBitmap(OpenCV.matToBitmap(gaussImage));
     }
 
 }
