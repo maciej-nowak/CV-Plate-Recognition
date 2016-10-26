@@ -55,9 +55,8 @@ public class LWK3 extends AppCompatActivity {
                     loadImage();
                     gaussImage(new Size(45,45));
                     scaleImage(2, "pyrDown");
-                    thresholdImage(127, 255, Imgproc.THRESH_TOZERO);
-
-
+                    thresholdImage(127.0, 255.0, Imgproc.THRESH_TOZERO);
+                    transformImage(3, 1, Imgproc.INTER_NEAREST);
                 } break;
                 default: {
                     super.onManagerConnected(status);
@@ -92,11 +91,18 @@ public class LWK3 extends AppCompatActivity {
         imageScaled.setImageBitmap(OpenCV.matToBitmap(scaledImage));
     }
 
-    private void thresholdImage(int thresh, int maxValue, int type) {
+    private void thresholdImage(double thresh, double maxValue, int type) {
         Mat thresholdImage = new Mat();
         Imgproc.threshold(image, thresholdImage, thresh, maxValue, type);
         OpenCV.saveImage("thresholdImage.jpg", thresholdImage);
         imageThreshold.setImageBitmap(OpenCV.matToBitmap(thresholdImage));
+    }
+
+    private void transformImage(int fx, int fy, int type) {
+        Mat transformedImage = new Mat(image.rows()*fx, image.cols()*fy, image.type());
+        Imgproc.resize(image, transformedImage, transformedImage.size(), fx, fy, type);
+        OpenCV.saveImage("transformedImage.jpg", transformedImage);
+        imageTransformed.setImageBitmap(OpenCV.matToBitmap(transformedImage));
     }
 
 }
