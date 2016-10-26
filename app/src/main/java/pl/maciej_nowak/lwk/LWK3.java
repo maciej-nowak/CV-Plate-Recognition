@@ -15,7 +15,7 @@ import org.opencv.imgproc.Imgproc;
 
 public class LWK3 extends AppCompatActivity {
 
-    ImageView imageOriginal, imageGauss, imageScaled, imageTransformed;
+    ImageView imageOriginal, imageGauss, imageScaled, imageThreshold, imageTransformed;
 
     Mat image;
 
@@ -29,6 +29,7 @@ public class LWK3 extends AppCompatActivity {
         imageOriginal = (ImageView) findViewById(R.id.imageOriginal);
         imageGauss = (ImageView) findViewById(R.id.imageGauss);
         imageScaled = (ImageView) findViewById(R.id.imageScaled);
+        imageThreshold = (ImageView) findViewById(R.id.imageThreshold);
         imageTransformed = (ImageView) findViewById(R.id.imageTransformed);
     }
 
@@ -54,6 +55,7 @@ public class LWK3 extends AppCompatActivity {
                     loadImage();
                     gaussImage(new Size(45,45));
                     scaleImage(2, "pyrDown");
+                    thresholdImage(127, 255, Imgproc.THRESH_TOZERO);
 
 
                 } break;
@@ -88,6 +90,13 @@ public class LWK3 extends AppCompatActivity {
         }
         OpenCV.saveImage("scaledImage.jpg", scaledImage);
         imageScaled.setImageBitmap(OpenCV.matToBitmap(scaledImage));
+    }
+
+    private void thresholdImage(int thresh, int maxValue, int type) {
+        Mat thresholdImage = new Mat();
+        Imgproc.threshold(image, thresholdImage, thresh, maxValue, type);
+        OpenCV.saveImage("thresholdImage.jpg", thresholdImage);
+        imageThreshold.setImageBitmap(OpenCV.matToBitmap(thresholdImage));
     }
 
 }
