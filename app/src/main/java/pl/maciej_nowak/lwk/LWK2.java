@@ -91,7 +91,7 @@ public class LWK2 extends AppCompatActivity {
     };
 
     private void loadImage() {
-        image = OpenCV.loadImage("image.jpg");
+        image = OpenCV.loadImage("image.jpg", Imgproc.COLOR_BGR2RGB);
         imageOriginal.setImageBitmap(OpenCV.matToBitmap(image));
     }
 

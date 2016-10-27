@@ -74,6 +74,61 @@
             android:layout_height="wrap_content"
             android:text="IMAGE TRANSFORMED" />
 
+        <ImageView
+            android:id="@+id/imageNoised"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp" />
+
+        <TextView
+            android:id="@+id/textNoised"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="IMAGE NOISED" />
+
+        <ImageView
+            android:id="@+id/imageHSV"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp" />
+
+        <TextView
+            android:id="@+id/textHSV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="IMAGE HSV" />
+
+        <ImageView
+            android:id="@+id/imageHSVColor"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp" />
+
+        <TextView
+            android:id="@+id/textHSVColor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="IMAGE HSV COLOR" />
+
+        <ImageView
+            android:id="@+id/imageGrayRange"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp" />
+
+        <TextView
+            android:id="@+id/textGrayRange"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="IMAGE GRAY" />
+
+        <ImageView
+            android:id="@+id/imageMulti"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp" />
+
+        <TextView
+            android:id="@+id/textMulti"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="IMAGE MULTI" />
+
     </LinearLayout>
 
 </android.support.v4.widget.NestedScrollView>

@@ -9,15 +9,20 @@ import android.widget.ImageView;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.photo.Photo;
 
 public class LWK3 extends AppCompatActivity {
 
     ImageView imageOriginal, imageGauss, imageScaled, imageThreshold, imageTransformed;
+    ImageView imageNoised, imageHSV, imageHSVColor, imageGrayRange, imageMulti;
 
-    Mat image;
+    Mat image, HSVimage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +36,11 @@ public class LWK3 extends AppCompatActivity {
         imageScaled = (ImageView) findViewById(R.id.imageScaled);
         imageThreshold = (ImageView) findViewById(R.id.imageThreshold);
         imageTransformed = (ImageView) findViewById(R.id.imageTransformed);
+        imageNoised = (ImageView) findViewById(R.id.imageNoised);
+        imageHSV = (ImageView) findViewById(R.id.imageHSV);
+        imageHSVColor = (ImageView) findViewById(R.id.imageHSVColor);
+        imageGrayRange = (ImageView) findViewById(R.id.imageGrayRange);
+        imageMulti = (ImageView) findViewById(R.id.imageMulti);
     }
 
     @Override
@@ -51,12 +61,16 @@ public class LWK3 extends AppCompatActivity {
             super.onManagerConnected(status);
             switch (status) {
                 case LoaderCallbackInterface.SUCCESS: {
-
                     loadImage();
                     gaussImage(new Size(45,45));
                     scaleImage(2, "pyrDown");
                     thresholdImage(127.0, 255.0, Imgproc.THRESH_TOZERO);
                     transformImage(3, 1, Imgproc.INTER_NEAREST);
+                    noiseImage();
+                    loadImageHSV();
+                    colorizeHSVImage(new Scalar(110, 50, 50), new Scalar(130, 255, 255));
+                    grayRangeImage(new Scalar(110, 50, 50), new Scalar(130, 255, 255));
+                    multiTransformImage();
                 } break;
                 default: {
                     super.onManagerConnected(status);
@@ -66,7 +80,7 @@ public class LWK3 extends AppCompatActivity {
     };
 
     private void loadImage() {
-        image = OpenCV.loadImage("image.jpg");
+        image = OpenCV.loadImage("image.jpg", Imgproc.COLOR_BGR2RGB);
         imageOriginal.setImageBitmap(OpenCV.matToBitmap(image));
     }
 
@@ -103,6 +117,57 @@ public class LWK3 extends AppCompatActivity {
         Imgproc.resize(image, transformedImage, transformedImage.size(), fx, fy, type);
         OpenCV.saveImage("transformedImage.jpg", transformedImage);
         imageTransformed.setImageBitmap(OpenCV.matToBitmap(transformedImage));
+    }
+
+    private void noiseImage() {
+        Mat noiseImage = new Mat();
+        Photo.fastNlMeansDenoisingColored(image, noiseImage);
+        OpenCV.saveImage("noiseImage.jpg", noiseImage);
+        imageNoised.setImageBitmap(OpenCV.matToBitmap(noiseImage));
+    }
+
+    private void doDnoise() {
+        Mat gray = new Mat(image.size(), CvType.CV_8U);
+        Imgproc.cvtColor(image, gray, Imgproc.COLOR_BGR2GRAY);
+        Mat mask = new Mat(image.size(), CvType.CV_8U);
+        Imgproc.threshold(gray, mask, 70, 255, Imgproc.THRESH_BINARY_INV);
+        Mat dn = new Mat(image.size(), CvType.CV_8UC3);
+        Photo.inpaint(image, mask, dn, 20, Photo.INPAINT_TELEA);
+        imageNoised.setImageBitmap(OpenCV.matToBitmap(dn));
+    }
+
+    private void loadImageHSV() {
+        HSVimage = OpenCV.loadImage("image.jpg", Imgproc.COLOR_BGR2HSV);
+        OpenCV.saveImage("hsvImage.jpg", HSVimage);
+        imageHSV.setImageBitmap(OpenCV.matToBitmap(HSVimage));
+    }
+
+    private void colorizeHSVImage(Scalar lower, Scalar upper) {
+        Mat colorImageHSV = new Mat();
+        Mat mask = new Mat();
+        Core.inRange(HSVimage, lower, upper, mask);
+        Core.bitwise_and(HSVimage, HSVimage, colorImageHSV, mask);
+        OpenCV.saveImage("hsvColorImage.jpg", colorImageHSV);
+        imageHSVColor.setImageBitmap(OpenCV.matToBitmap(colorImageHSV));
+    }
+
+    private void grayRangeImage(Scalar lower, Scalar upper) {
+        Mat grayImage = OpenCV.colorizeImage(image, Imgproc.COLOR_RGB2GRAY);
+        Mat grayRangeImage = new Mat();
+        Mat mask = new Mat();
+        Core.inRange(grayImage, lower, upper, mask);
+        Core.bitwise_and(grayImage, grayImage, grayRangeImage, mask);
+        OpenCV.saveImage("grayRangeImage.jpg", grayRangeImage);
+        imageGrayRange.setImageBitmap(OpenCV.matToBitmap(grayRangeImage));
+    }
+
+    private void multiTransformImage() {
+        Mat rotatedImage = new Mat();
+        Mat scaledImage = new Mat(image.rows()/2, image.cols()/2, image.type());
+        Imgproc.pyrDown(image, scaledImage, new Size(image.cols()/2, image.rows()/2));
+        Mat grayImage = OpenCV.colorizeImage(scaledImage, Imgproc.COLOR_RGB2GRAY);
+        Core.flip(grayImage, rotatedImage, -1);
+        imageMulti.setImageBitmap(OpenCV.matToBitmap(rotatedImage));
     }
 
 }

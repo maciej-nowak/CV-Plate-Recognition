@@ -23,11 +23,11 @@ public abstract class OpenCV {
         return bmpOut;
     }
 
-    public static Mat loadImage(String fileName) {
+    public static Mat loadImage(String fileName, int color) {
         File file = new File(root, fileName);
         Mat imageInput = Imgcodecs.imread(file.getAbsolutePath());
         Mat image = new Mat();
-        Imgproc.cvtColor(imageInput, image, Imgproc.COLOR_BGR2RGB);
+        Imgproc.cvtColor(imageInput, image, color);
         return image;
     }
 
@@ -37,7 +37,7 @@ public abstract class OpenCV {
     }
 
     public static Mat colorizeImage(String fileName, int color) {
-        Mat image = loadImage(fileName);
+        Mat image = loadImage(fileName, Imgproc.COLOR_BGR2RGB);
         Mat newImage = new Mat();
         Imgproc.cvtColor(image, newImage, color);
         return newImage;
