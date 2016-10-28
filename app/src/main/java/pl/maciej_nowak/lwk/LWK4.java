@@ -11,6 +11,7 @@ import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 public class LWK4 extends AppCompatActivity {
@@ -50,6 +51,8 @@ public class LWK4 extends AppCompatActivity {
             switch (status) {
                 case LoaderCallbackInterface.SUCCESS: {
                     loadImage();
+                    erodeImage(5);
+                    dilateImage(5);
                 } break;
                 default: {
                     super.onManagerConnected(status);
@@ -61,6 +64,22 @@ public class LWK4 extends AppCompatActivity {
     private void loadImage() {
         image = OpenCV.loadImage("image.jpg", Imgproc.COLOR_BGR2RGB);
         imageOriginal.setImageBitmap(OpenCV.matToBitmap(image));
+    }
+
+    private void erodeImage(int size) {
+        Mat erodedImage = new Mat();
+        Mat element = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(2*size+1, 2*size+1));
+        Imgproc.erode(image, erodedImage, element);
+        OpenCV.saveImage("erodedImage.jpg", erodedImage);
+        imageEroded.setImageBitmap(OpenCV.matToBitmap(erodedImage));
+    }
+
+    private void dilateImage(int size) {
+        Mat dilatedImage = new Mat();
+        Mat element = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(2*size+1, 2*size+1));
+        Imgproc.dilate(image, dilatedImage, element);
+        OpenCV.saveImage("dilatedImage.jpg", dilatedImage);
+        imageDilated.setImageBitmap(OpenCV.matToBitmap(dilatedImage));
     }
 
 }
