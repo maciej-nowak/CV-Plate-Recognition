@@ -1,5 +1,6 @@
 package pl.maciej_nowak.lwk;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -23,22 +24,10 @@ public class MainActivity extends AppCompatActivity {
         Button lwk4 = (Button) findViewById(R.id.lwk4);
         Button lwk5 = (Button) findViewById(R.id.lwk5);
 
-        lwk2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, LWK2.class);
-                startActivity(intent);
-            }
-        });
-        lwk3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, LWK3.class);
-                startActivity(intent);
-            }
-        });
+        lwk2.setOnClickListener(onLWKClick(this, LWK2.class));
+        lwk3.setOnClickListener(onLWKClick(this, LWK3.class));
+        lwk4.setOnClickListener(onLWKClick(this, LWK4.class));
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -53,6 +42,16 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private View.OnClickListener onLWKClick(final Context context, final Class cl) {
+        return (new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, cl);
+                startActivity(intent);
+            }
+        });
     }
 
 }
