@@ -62,5 +62,16 @@
             android:layout_height="wrap_content"
             android:text="IMAGE HISTOGRAM CALCULATED" />
 
+        <ImageView
+            android:id="@+id/imageMorphed"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp" />
+
+        <TextView
+            android:id="@+id/textMorphed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="IMAGE MORPHED" />
+
     </LinearLayout>
 </android.support.v4.widget.NestedScrollView>

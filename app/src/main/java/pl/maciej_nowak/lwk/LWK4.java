@@ -4,31 +4,25 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 import android.widget.ImageView;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
-import org.opencv.android.Utils;
 import org.opencv.core.Core;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfFloat;
 import org.opencv.core.MatOfInt;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 public class LWK4 extends AppCompatActivity {
 
-    ImageView imageOriginal, imageEroded, imageDilated, imageHistogramCalculated;
+    ImageView imageOriginal, imageEroded, imageDilated, imageHistogramCalculated, imageMorphed;
     Mat image;
 
     @Override
@@ -42,7 +36,7 @@ public class LWK4 extends AppCompatActivity {
         imageEroded = (ImageView) findViewById(R.id.imageEroded);
         imageDilated = (ImageView) findViewById(R.id.imageDilated);
         imageHistogramCalculated = (ImageView) findViewById(R.id.imageHistogramCalculated);
-
+        imageMorphed = (ImageView) findViewById(R.id.imageMorphed);
     }
 
     @Override
@@ -67,6 +61,7 @@ public class LWK4 extends AppCompatActivity {
                     erodeImage(5);
                     dilateImage(5);
                     calculateHistogram();
+                    morphImage(5, Imgproc.CV_SHAPE_RECT);
                 } break;
                 default: {
                     super.onManagerConnected(status);
@@ -93,7 +88,6 @@ public class LWK4 extends AppCompatActivity {
         Mat element = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(2*size+1, 2*size+1));
         Imgproc.dilate(image, dilatedImage, element);
         OpenCV.saveImage("dilatedImage.jpg", dilatedImage);
-        Log.d("TAG", "D: " + dilatedImage.toString());
         imageDilated.setImageBitmap(OpenCV.matToBitmap(dilatedImage));
     }
 
@@ -116,6 +110,15 @@ public class LWK4 extends AppCompatActivity {
         }
         OpenCV.saveImage("histogramImage.jpg", histogram);
         imageHistogramCalculated.setImageBitmap(OpenCV.matToBitmap(histogram));
+    }
+
+    private void morphImage(int size, int type) {
+        Mat imageTest = OpenCV.loadImage("test1.jpg", Imgproc.COLOR_BGR2RGB);
+        Mat morphedImage = new Mat();
+        Mat element = Imgproc.getStructuringElement(type, new Size(2*size+1, 2*size+1));
+        Imgproc.morphologyEx(imageTest, morphedImage, 0, element);
+        OpenCV.saveImage("morphedImage.jpg", morphedImage);
+        imageMorphed.setImageBitmap(OpenCV.matToBitmap(morphedImage));
     }
 
 }
