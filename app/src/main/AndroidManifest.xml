@@ -31,6 +31,10 @@
         <activity
             android:name=".LWK4"
             android:label="@string/title_activity_lwk4"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Presentation"
+            android:label="@string/title_activity_presentation"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

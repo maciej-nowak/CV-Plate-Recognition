@@ -10,7 +10,8 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="pl.maciej_nowak.lwk.MainActivity"
-    tools:showIn="@layout/activity_main">
+    tools:showIn="@layout/activity_main"
+    android:orientation="vertical">
 
     <Button
         android:id="@+id/lwk2"
@@ -35,4 +36,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="LWK5"/>
+
+    <Button
+        android:id="@+id/presentation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PRESENTATION"/>
+
 </LinearLayout>
