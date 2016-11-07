@@ -1,15 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<android.support.v4.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="pl.maciej_nowak.lwk.Presentation"
-    tools:showIn="@layout/activity_presentation">
+    tools:showIn="@layout/activity_presentation"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-</RelativeLayout>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:context="pl.maciej_nowak.lwk.Presentation"
+        tools:showIn="@layout/activity_presentation"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/imageOriginal"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp" />
+
+        <TextView
+            android:id="@+id/textOriginal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ORIGINAL" />
+
+        <ImageView
+            android:id="@+id/imageGrayScale"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp" />
+
+        <TextView
+            android:id="@+id/textGrayScale"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="GRAY SCALE" />
+
+        <ImageView
+            android:id="@+id/imageGaussBlur"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp" />
+
+        <TextView
+            android:id="@+id/textGaussBlur"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="GAUSSIAN BLUR" />
+
+        <ImageView
+            android:id="@+id/imageAdaptiveThreshold"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp" />
+
+        <TextView
+            android:id="@+id/textAdaptiveThreshold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ADAPTIVE THRESHOLD" />
+
+    </LinearLayout>
+
+</android.support.v4.widget.NestedScrollView>
