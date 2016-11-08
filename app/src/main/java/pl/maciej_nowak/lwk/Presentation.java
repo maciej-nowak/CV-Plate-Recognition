@@ -76,17 +76,22 @@ public class Presentation extends AppCompatActivity {
             super.onManagerConnected(status);
             switch (status) {
                 case LoaderCallbackInterface.SUCCESS: {
-                    loadImage("p1.jpg");
+                    loadImage("p3.jpg");
                     grayScale();
+                    findRectangle();
                     gaussBlur(new Size(3, 3));
-                    sobel(-1, 1, 0);
+                    adaptiveThresholdCrop(255, Imgproc.ADAPTIVE_THRESH_MEAN_C, Imgproc.THRESH_BINARY, 99, 4);
+
+                    label.setText(OCR("P-adaptiveThreshold.jpg"));
+
+                    /*sobel(-1, 1, 0);
                     threshold(0, 255,  Imgproc.THRESH_OTSU + Imgproc.THRESH_BINARY);
                     adaptiveThreshold(255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, Imgproc.THRESH_BINARY_INV, 75, 35);
                     adaptiveThresholdCrop(255, Imgproc.ADAPTIVE_THRESH_MEAN_C, Imgproc.THRESH_BINARY, 99, 4);
                     morphology();
                     drawConturs();
                     findPlate();
-                    label.setText(OCR());
+                    label.setText(OCR("plate.jpg"));*/
                 } break;
                 default: {
                     super.onManagerConnected(status);
@@ -103,24 +108,28 @@ public class Presentation extends AppCompatActivity {
     private void grayScale() {
         grayScale = OpenCV.colorizeImage(image, Imgproc.COLOR_RGB2GRAY);
         ivGrayScale.setImageBitmap(OpenCV.matToBitmap(grayScale));
+        OpenCV.saveImage("P-grayScale.jpg", grayScale);
     }
 
     private void gaussBlur(Size size) {
         gaussBlur = new Mat(grayScale.rows(), grayScale.cols(), grayScale.type());
         Imgproc.GaussianBlur(grayScale, gaussBlur, size, 0);
         ivGaussBlur.setImageBitmap(OpenCV.matToBitmap(gaussBlur));
+        OpenCV.saveImage("P-gaussBlur.jpg", gaussBlur);
     }
 
     private void sobel(int depth, int x, int y) {
         sobel = new Mat();
         Imgproc.Sobel(gaussBlur, sobel, depth, x, y);
         ivSobel.setImageBitmap(OpenCV.matToBitmap(sobel));
+        OpenCV.saveImage("P-sobel.jpg", sobel);
     }
 
     private void threshold(double thresh, double max, int type) {
         threshold = new Mat();
         Imgproc.threshold(sobel, threshold, thresh, max, type);
         ivThreshold.setImageBitmap(OpenCV.matToBitmap(threshold));
+        OpenCV.saveImage("P-threshold.jpg", threshold);
     }
 
     private void adaptiveThreshold(double maxValue, int method, int type, int size, double C) {
@@ -134,12 +143,12 @@ public class Presentation extends AppCompatActivity {
         adaptiveThresholdCrop = new Mat();
         Imgproc.adaptiveThreshold(gaussBlur, adaptiveThresholdCrop, maxValue, method, type, size, C);
         ivAdaptiveThresholdCrop.setImageBitmap(OpenCV.matToBitmap(adaptiveThresholdCrop));
-        //OpenCV.saveImage("adaptive.jpg", adaptiveThresholdCropImage);
+        OpenCV.saveImage("P-adaptiveThreshold.jpg", adaptiveThresholdCrop);
     }
 
     private void morphology() {
         morphology = new Mat();
-        Mat element = getStructuringElement(Imgproc.MORPH_RECT, new Size(17, 3));
+        Mat element = getStructuringElement(Imgproc.MORPH_RECT, new Size(15, 5));
         Imgproc.morphologyEx(adaptiveThreshold, morphology, Imgproc.MORPH_CLOSE, element);
         ivMorphology.setImageBitmap(OpenCV.matToBitmap(morphology));
     }
@@ -161,11 +170,13 @@ public class Presentation extends AppCompatActivity {
                 RotatedRect box = Imgproc.minAreaRect(points);
                 if(checkRatio(box)){
                     Imgproc.rectangle(rectangle, box.boundingRect().tl(), box.boundingRect().br(), new Scalar(0, 0, 255));
+                    ivRectangle.setImageBitmap(OpenCV.matToBitmap(rectangle));
                     plateCandidate = new Mat(adaptiveThresholdCrop, box.boundingRect());
                     if(checkDensity(plateCandidate)){
                         plate = plateCandidate.clone();
                         OpenCV.saveImage("plate.jpg", plate);
                         ivPlate.setImageBitmap(OpenCV.matToBitmap(plate));
+                        ivRectangle.setImageBitmap(OpenCV.matToBitmap(rectangle));
                     } else {
                         Imgproc.rectangle(rectangle, box.boundingRect().tl(), box.boundingRect().br(), new Scalar(0, 255, 0));
                         ivRectangle.setImageBitmap(OpenCV.matToBitmap(rectangle));
@@ -176,13 +187,20 @@ public class Presentation extends AppCompatActivity {
 
     }
 
-    private String OCR() {
+    private String OCR(String fileName) {
         TessBaseAPI tessBaseApi = new TessBaseAPI();
         tessBaseApi.init(OpenCV.root.getAbsolutePath(), "eng");
-        tessBaseApi.setImage(new File(OpenCV.root, "plate.jpg"));
+        tessBaseApi.setVariable("tessedit_char_whitelist", "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
+        tessBaseApi.setImage(new File(OpenCV.root, fileName));
         extractedText = tessBaseApi.getUTF8Text();
         tessBaseApi.end();
         return extractedText;
+    }
+
+    private Mat findRectangle() {
+        Mat rec = new Mat();
+        Imgproc.Canny(grayScale, rec, 100, 100);
+        return rec;
     }
 
     private boolean checkRatio(RotatedRect candidate) {
