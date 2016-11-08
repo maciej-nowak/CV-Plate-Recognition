@@ -35,6 +35,14 @@
             android:layout_height="wrap_content"
             android:text="ORIGINAL" />
 
+        <TextView
+            android:id="@+id/textSteps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:text="STEPS:"/>
+
         <ImageView
             android:id="@+id/imageGrayScale"
             android:layout_width="wrap_content"
@@ -44,7 +52,7 @@
             android:id="@+id/textGrayScale"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="GRAY SCALE" />
+            android:text="1. GRAY SCALE" />
 
         <ImageView
             android:id="@+id/imageGaussBlur"
@@ -55,7 +63,29 @@
             android:id="@+id/textGaussBlur"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="GAUSSIAN BLUR" />
+            android:text="2. GAUSSIAN BLUR" />
+
+        <ImageView
+            android:id="@+id/imageSobel"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp" />
+
+        <TextView
+            android:id="@+id/textSobel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3. SOBEL" />
+
+        <ImageView
+            android:id="@+id/imageThreshold"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp" />
+
+        <TextView
+            android:id="@+id/textThreshold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="4. THRESHOLD" />
 
         <ImageView
             android:id="@+id/imageAdaptiveThreshold"
@@ -66,7 +96,73 @@
             android:id="@+id/textAdaptiveThreshold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ADAPTIVE THRESHOLD" />
+            android:text="5. ADAPTIVE THRESHOLD" />
+
+        <ImageView
+            android:id="@+id/imageAdaptiveThresholdCrop"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp" />
+
+        <TextView
+            android:id="@+id/textAdaptiveThresholdCrop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="6. ADAPTIVE THRESHOLD CROP" />
+
+        <ImageView
+            android:id="@+id/imageMorphology"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp" />
+
+        <TextView
+            android:id="@+id/textMorphology"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="7. MORPHOLOGY" />
+
+        <ImageView
+            android:id="@+id/imageContours"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp" />
+
+        <TextView
+            android:id="@+id/textContours"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="8. CONTOURS" />
+
+        <ImageView
+            android:id="@+id/imageRectangle"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp" />
+
+        <TextView
+            android:id="@+id/textRectangle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="9.RECTANGLE" />
+
+        <ImageView
+            android:id="@+id/imagePlate"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp" />
+
+        <TextView
+            android:id="@+id/textPlate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="10. PLATE" />
+
+        <TextView
+            android:id="@+id/textOCR"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="11. OCR (TESSERACT)"/>
+
+        <TextView
+            android:id="@+id/textResult"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 
