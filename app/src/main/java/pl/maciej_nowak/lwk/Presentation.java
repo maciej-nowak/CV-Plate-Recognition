@@ -1,6 +1,9 @@
 package pl.maciej_nowak.lwk;
 
 import android.app.ProgressDialog;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -10,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
@@ -69,7 +73,6 @@ public class Presentation extends AppCompatActivity {
         recognize.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String name = imageName.getText().toString();
                 if (!OpenCVLoader.initDebug()) {
                     Log.d("TAG", "Internal OpenCV library not found. Using OpenCV Manager for initialization");
                     OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, Presentation.this, baseLoaderCallback);
@@ -81,51 +84,13 @@ public class Presentation extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        /*if (!OpenCVLoader.initDebug()) {
-            Log.d("TAG", "Internal OpenCV library not found. Using OpenCV Manager for initialization");
-            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, this, baseLoaderCallback);
-        } else {
-            Log.d("TAG", "OpenCV library found inside package. Using it!");
-            baseLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
-        }*/
-    }
-
     private BaseLoaderCallback baseLoaderCallback = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
             super.onManagerConnected(status);
             switch (status) {
                 case LoaderCallbackInterface.SUCCESS: {
-
-                    //final ProgressDialog progressDialog;
-                    //progressDialog = ProgressDialog.show(Presentation.this, "Recognizing", "In progress", true);
-
-                    //TRY TO FIND PLATE AREA
-                    loadImage(imageName.getText().toString());
-                    grayScale();
-                    gaussBlur(new Size(3, 3));
-                    sobel(-1, 1, 0);
-                    //threshold(0, 255,  Imgproc.THRESH_OTSU + Imgproc.THRESH_BINARY);
-                    adaptiveThreshold(255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, Imgproc.THRESH_BINARY_INV, 65, 35);
-                    morphology();
-                    drawConturs();
-
-                    //RECOGNIZE TEXT FROM POTENTIAL PLATE AND FROM ALL IMAGE
-                    adaptiveThresholdCrop(255, Imgproc.ADAPTIVE_THRESH_MEAN_C, Imgproc.THRESH_BINARY, 99, 4);
-                    findPlate();
-                    areaText = OCR("P-plate.jpg");
-                    fullText =  OCR("P-adaptiveThresholdCrop.jpg");
-
-                    //SET PLATE NUMBER
-                    label.setText("");
-                    ivPlate.setImageResource(android.R.color.transparent);
-                    label.setText(areaText);
-
-                    //progressDialog.dismiss();
-
+                    new RecognizeTask().execute();
                 } break;
                 default: {
                     super.onManagerConnected(status);
@@ -133,6 +98,46 @@ public class Presentation extends AppCompatActivity {
             }
         }
     };
+
+    class RecognizeTask extends AsyncTask<Void, Void, Void> {
+
+        ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            progressDialog = ProgressDialog.show(Presentation.this, "Recognizing", "In progress", true);
+
+            //TRY TO FIND PLATE AREA
+            loadImage(imageName.getText().toString());
+            grayScale();
+            gaussBlur(new Size(3, 3));
+            sobel(-1, 1, 0);
+            threshold(0, 255,  Imgproc.THRESH_OTSU + Imgproc.THRESH_BINARY); //not in use
+            adaptiveThreshold(255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, Imgproc.THRESH_BINARY_INV, 65, 35);
+            morphology();
+            drawContours();
+
+            //RECOGNIZE TEXT FROM POTENTIAL PLATE AND FROM ALL IMAGE
+            adaptiveThresholdCrop(255, Imgproc.ADAPTIVE_THRESH_MEAN_C, Imgproc.THRESH_BINARY, 99, 4);
+            findPlate();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            areaText = OCR("P-plate.jpg");
+            //fullText =  OCR("P-adaptiveThresholdCrop.jpg");
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            //SET PLATE NUMBER
+            label.setText("");
+            //ivPlate.setImageResource(android.R.color.transparent);
+            label.setText(areaText);
+            progressDialog.dismiss();
+        }
+    }
 
     private void loadImage(String fileName) {
         image = OpenCV.loadImage(fileName, Imgproc.COLOR_BGR2RGB);
@@ -188,27 +193,34 @@ public class Presentation extends AppCompatActivity {
         OpenCV.saveImage("P-morphology.jpg", morphology);
     }
 
-    private void drawConturs() {
+    private void drawContours() {
         contoursPoints = new ArrayList<>();
         contours = morphology.clone();
         Imgproc.findContours(contours, contoursPoints, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
         Imgproc.drawContours(contours, contoursPoints, -1, new Scalar(255,0,0));
         ivContours.setImageBitmap(OpenCV.matToBitmap(contours));
+        OpenCV.saveImage("P-contours.jpg", contours);
     }
 
     private void findPlate() {
+        //PREPARE DATA
         File file = new File(OpenCV.root, "P-plate.jpg");
         file.delete();
         rectangle = image.clone();
+
+        //FOR EACH SET POINTS
         if (contoursPoints.size() > 0) {
             for (MatOfPoint matOfPoint : contoursPoints) {
                 MatOfPoint2f points = new MatOfPoint2f(matOfPoint.toArray());
-
                 RotatedRect box = Imgproc.minAreaRect(points);
                 Imgproc.rectangle(rectangle, box.boundingRect().tl(), box.boundingRect().br(), new Scalar(255, 0, 0));
+
+                //IF POINTS SET HAS REQUIRE RATIO AND AREA
                 if(checkRatio(box)){
                     Log.d("TAG", "OK");
                     plateCandidate = new Mat(adaptiveThresholdCrop, box.boundingRect());
+
+                    //IF POINTS SET HAS REQUIRE WHITE PIXELS RATIO INSIDE
                     if(checkDensity(plateCandidate)){
                         Imgproc.rectangle(rectangle, box.boundingRect().tl(), box.boundingRect().br(), new Scalar(0, 255, 0));
                         plate = plateCandidate.clone();
@@ -220,6 +232,8 @@ public class Presentation extends AppCompatActivity {
                 }
             }
         }
+
+        //SHOW RESULTS
         ivRectangle.setImageBitmap(OpenCV.matToBitmap(rectangle));
         OpenCV.saveImage("P-rectangle.jpg", rectangle);
     }
@@ -260,65 +274,4 @@ public class Presentation extends AppCompatActivity {
             return "";
         }
     }
-
-    //TWORZENIE PLIKOW TESTOWYCH
-    /*
-    private void test() {
-        threshold = new Mat();
-        Imgproc.threshold(gaussBlur, threshold, 150, 255, Imgproc.CV_GAUSSIAN);
-        ivThreshold.setImageBitmap(OpenCV.matToBitmap(threshold));
-        OpenCV.saveImage("P-threshold.jpg", threshold);
-    }
-
-    private void test2(double thresh, double max, int type, String name) {
-        threshold = new Mat();
-        Imgproc.threshold(gaussBlur, threshold, thresh, max, type);
-        ivThreshold.setImageBitmap(OpenCV.matToBitmap(threshold));
-        OpenCV.saveImage(name, threshold);
-    }*/
-
-    /*private void findRectangles() {
-        loadImage("example.jpg");
-        grayScale();
-        gaussBlur(new Size(3,3));
-        Mat edges = new Mat();
-        Imgproc.Canny(gaussBlur, edges, 10, 250);
-        ivSobel.setImageBitmap(OpenCV.matToBitmap(edges));
-        Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(7, 7));
-        ivThreshold.setImageBitmap(OpenCV.matToBitmap(kernel));
-        Mat closed = new Mat();
-        Imgproc.morphologyEx(edges, closed, Imgproc.MORPH_CLOSE, kernel);
-        ivAdaptiveThreshold.setImageBitmap(OpenCV.matToBitmap(closed));
-        List<MatOfPoint> contours = new ArrayList<>();
-        Imgproc.findContours(closed.clone(), contours, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-        int total = 0;
-
-        MatOfPoint2f point;
-        MatOfPoint2f approx;
-
-        for(MatOfPoint c : contours) {
-            point = new MatOfPoint2f(c.toArray());
-            double peri = Imgproc.arcLength(point, true);
-            approx = new MatOfPoint2f();
-            Imgproc.approxPolyDP(point, approx, 0.02 * peri, true);
-            if(approx.height() == 4) {
-                List<MatOfPoint> contourTemp = new ArrayList<>();
-                contourTemp.add(new MatOfPoint(approx.toArray()));
-                Imgproc.drawContours(image, contourTemp, -1, new Scalar(0, 255, 0), 4);
-                total++;
-            }
-        }
-        ivAdaptiveThresholdCrop.setImageBitmap(OpenCV.matToBitmap(image));
-        Log.d("TAG", total + "");
-    }*/
-
-    /*loadImage("test7c.jpg");
-    label.setText(OCR("test7c.jpg"));
-    grayScale();
-    gaussBlur(new Size(3, 3));
-    adaptiveThresholdCrop(255, Imgproc.ADAPTIVE_THRESH_MEAN_C, Imgproc.THRESH_BINARY, 99, 4, "t1d.jpg");
-    test2();
-    adaptiveThresholdCrop(255, Imgproc.ADAPTIVE_THRESH_MEAN_C, Imgproc.THRESH_BINARY, 99, 4);
-    label.setText(OCR("P-threshold.jpg"));*/
-
 }
