@@ -24,6 +24,18 @@
         tools:showIn="@layout/activity_presentation"
         android:orientation="vertical">
 
+        <EditText
+            android:id="@+id/imageName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="t1.jpg"/>
+
+        <Button
+            android:id="@+id/imageRecognize"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="RECOGNIZE"/>
+
         <ImageView
             android:id="@+id/imageOriginal"
             android:layout_width="wrap_content"
