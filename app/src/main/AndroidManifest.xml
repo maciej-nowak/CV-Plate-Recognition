@@ -35,6 +35,10 @@
         <activity
             android:name=".Presentation"
             android:label="@string/title_activity_presentation"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".App"
+            android:label="@string/title_activity_app"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

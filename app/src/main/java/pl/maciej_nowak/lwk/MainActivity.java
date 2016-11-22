@@ -24,11 +24,13 @@ public class MainActivity extends AppCompatActivity {
         Button lwk4 = (Button) findViewById(R.id.lwk4);
         Button lwk5 = (Button) findViewById(R.id.lwk5);
         Button presentation = (Button) findViewById(R.id.presentation);
+        Button app = (Button) findViewById(R.id.application);
 
         lwk2.setOnClickListener(onLWKClick(this, LWK2.class));
         lwk3.setOnClickListener(onLWKClick(this, LWK3.class));
         lwk4.setOnClickListener(onLWKClick(this, LWK4.class));
         presentation.setOnClickListener(onLWKClick(this, Presentation.class));
+        app.setOnClickListener(onLWKClick(this, App.class));
     }
 
     @Override

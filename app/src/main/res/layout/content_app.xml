@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v4.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="pl.maciej_nowak.lwk.App"
+    tools:showIn="@layout/activity_app"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/imageName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="1"/>
+
+        <Button
+            android:id="@+id/imageRecognize"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="RECOGNIZE"/>
+
+        <ImageView
+            android:id="@+id/imageOriginal"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp" />
+
+        <TextView
+            android:id="@+id/textOriginal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="IMAGE" />
+
+        <ImageView
+            android:id="@+id/imageRectangle"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp" />
+
+        <TextView
+            android:id="@+id/textRectangle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="FOUNDED PLATE IN THE IMAGE" />
+
+        <ImageView
+            android:id="@+id/imagePlate"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp" />
+
+        <TextView
+            android:id="@+id/textPlate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PLATE" />
+
+        <TextView
+            android:id="@+id/textResult"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+</android.support.v4.widget.NestedScrollView>

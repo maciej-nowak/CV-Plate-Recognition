@@ -43,4 +43,10 @@
         android:layout_height="wrap_content"
         android:text="PRESENTATION"/>
 
+    <Button
+        android:id="@+id/application"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="APPLICATION"/>
+
 </LinearLayout>

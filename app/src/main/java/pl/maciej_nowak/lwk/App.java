@@ -12,6 +12,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.googlecode.tesseract.android.TessBaseAPI;
+
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
@@ -24,23 +26,20 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
-import static org.opencv.imgproc.Imgproc.getStructuringElement;
-
-import com.googlecode.tesseract.android.*;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Presentation extends AppCompatActivity {
+import static org.opencv.imgproc.Imgproc.getStructuringElement;
 
-    ImageView ivOriginal, ivGrayScale, ivGaussBlur, ivSobel, ivThreshold, ivAdaptiveThreshold;
-    ImageView ivAdaptiveThresholdCrop, ivMorphology, ivContours, ivRectangle, ivPlate;
+public class App extends AppCompatActivity {
+
+    ImageView ivOriginal, ivRectangle, ivPlate;
     TextView label;
     EditText imageName;
     Button recognize;
 
-    Mat image, grayScale, gaussBlur, sobel, threshold, adaptiveThreshold, adaptiveThresholdCrop;
+    Mat image, grayScale, gaussBlur, sobel, adaptiveThreshold, adaptiveThresholdCrop;
     Mat morphology, contours, rectangle, plateCandidate, plate;
     List<MatOfPoint> contoursPoints;
     String areaText;
@@ -49,19 +48,11 @@ public class Presentation extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_presentation);
+        setContentView(R.layout.activity_app);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         ivOriginal = (ImageView) findViewById(R.id.imageOriginal);
-        ivGrayScale = (ImageView) findViewById(R.id.imageGrayScale);
-        ivGaussBlur = (ImageView) findViewById(R.id.imageGaussBlur);
-        ivSobel = (ImageView) findViewById(R.id.imageSobel);
-        ivThreshold = (ImageView) findViewById(R.id.imageThreshold);
-        ivAdaptiveThreshold = (ImageView) findViewById(R.id.imageAdaptiveThreshold);
-        ivAdaptiveThresholdCrop = (ImageView) findViewById(R.id.imageAdaptiveThresholdCrop);
-        ivMorphology = (ImageView) findViewById(R.id.imageMorphology);
-        ivContours = (ImageView) findViewById(R.id.imageContours);
         ivRectangle = (ImageView) findViewById(R.id.imageRectangle);
         ivPlate = (ImageView) findViewById(R.id.imagePlate);
         imageName = (EditText) findViewById(R.id.imageName);
@@ -73,7 +64,7 @@ public class Presentation extends AppCompatActivity {
             public void onClick(View view) {
                 if (!OpenCVLoader.initDebug()) {
                     Log.d("TAG", "Internal OpenCV library not found. Using OpenCV Manager for initialization");
-                    OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, Presentation.this, baseLoaderCallback);
+                    OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, App.this, baseLoaderCallback);
                 } else {
                     Log.d("TAG", "OpenCV library found inside package. Using it!");
                     baseLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
@@ -88,7 +79,7 @@ public class Presentation extends AppCompatActivity {
             super.onManagerConnected(status);
             switch (status) {
                 case LoaderCallbackInterface.SUCCESS: {
-                    new RecognizeTask().execute();
+                    new App.RecognizeTask().execute();
                 } break;
                 default: {
                     super.onManagerConnected(status);
@@ -103,7 +94,7 @@ public class Presentation extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-            progressDialog = ProgressDialog.show(Presentation.this, "Recognizing", "In progress", true);
+            progressDialog = ProgressDialog.show(App.this, "Recognizing", "In progress", true);
 
             //TRY TO FIND PLATE AREA
             fileNumber = imageName.getText().toString();
@@ -112,9 +103,8 @@ public class Presentation extends AppCompatActivity {
             grayScale();
             gaussBlur(new Size(3, 3));
             sobel(-1, 1, 0);
-            //threshold(0, 255,  Imgproc.THRESH_OTSU + Imgproc.THRESH_BINARY); //not in use
             adaptiveThreshold(255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, Imgproc.THRESH_BINARY_INV, 65, 35);
-            adaptiveThresholdCrop(255, Imgproc.ADAPTIVE_THRESH_MEAN_C, Imgproc.THRESH_BINARY, 15, 40); //for find plate
+            adaptiveThresholdCrop(255, Imgproc.ADAPTIVE_THRESH_MEAN_C, Imgproc.THRESH_BINARY, 15, 40);
             morphology();
             drawContours();
 
@@ -144,51 +134,32 @@ public class Presentation extends AppCompatActivity {
 
     private void grayScale() {
         grayScale = OpenCV.colorizeImage(image, Imgproc.COLOR_RGB2GRAY);
-        ivGrayScale.setImageBitmap(OpenCV.matToBitmap(grayScale));
-        OpenCV.saveImage(fileNumber + "-grayScale.jpg", grayScale);
     }
 
     private void gaussBlur(Size size) {
         gaussBlur = new Mat(grayScale.rows(), grayScale.cols(), grayScale.type());
         Imgproc.GaussianBlur(grayScale, gaussBlur, size, 0);
-        ivGaussBlur.setImageBitmap(OpenCV.matToBitmap(gaussBlur));
-        OpenCV.saveImage(fileNumber + "-gaussBlur.jpg", gaussBlur);
     }
 
     private void sobel(int depth, int x, int y) {
         sobel = new Mat();
         Imgproc.Sobel(gaussBlur, sobel, depth, x, y);
-        ivSobel.setImageBitmap(OpenCV.matToBitmap(sobel));
-        OpenCV.saveImage(fileNumber + "-sobel.jpg", sobel);
-    }
-
-    private void threshold(double thresh, double max, int type) {
-        threshold = new Mat();
-        Imgproc.threshold(sobel, threshold, thresh, max, type);
-        ivThreshold.setImageBitmap(OpenCV.matToBitmap(threshold));
-        OpenCV.saveImage(fileNumber + "-threshold.jpg", threshold);
     }
 
     private void adaptiveThreshold(double maxValue, int method, int type, int size, double C) {
         adaptiveThreshold = new Mat();
         Imgproc.adaptiveThreshold(sobel, adaptiveThreshold, maxValue, method, type, size, C);
-        ivAdaptiveThreshold.setImageBitmap(OpenCV.matToBitmap(adaptiveThreshold));
-        OpenCV.saveImage(fileNumber + "-adaptiveThreshold.jpg", adaptiveThreshold);
     }
 
     private void adaptiveThresholdCrop(double maxValue, int method, int type, int size, double C) {
         adaptiveThresholdCrop = new Mat();
         Imgproc.adaptiveThreshold(gaussBlur, adaptiveThresholdCrop, maxValue, method, type, size, C);
-        ivAdaptiveThresholdCrop.setImageBitmap(OpenCV.matToBitmap(adaptiveThresholdCrop));
-        OpenCV.saveImage(fileNumber + "-adaptiveThresholdCrop.jpg", adaptiveThresholdCrop);
     }
 
     private void morphology() {
         morphology = new Mat();
         Mat element = getStructuringElement(Imgproc.MORPH_RECT, new Size(15, 5));
         Imgproc.morphologyEx(adaptiveThreshold, morphology, Imgproc.MORPH_CLOSE, element);
-        ivMorphology.setImageBitmap(OpenCV.matToBitmap(morphology));
-        OpenCV.saveImage(fileNumber + "-morphology.jpg", morphology);
     }
 
     private void drawContours() {
@@ -196,8 +167,6 @@ public class Presentation extends AppCompatActivity {
         contours = morphology.clone();
         Imgproc.findContours(contours, contoursPoints, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
         Imgproc.drawContours(contours, contoursPoints, -1, new Scalar(255,0,0));
-        ivContours.setImageBitmap(OpenCV.matToBitmap(contours));
-        OpenCV.saveImage(fileNumber + "-contours.jpg", contours);
     }
 
     private void findPlate() {
@@ -216,7 +185,6 @@ public class Presentation extends AppCompatActivity {
 
                 //IF POINTS SET HAS REQUIRE RATIO AND AREA
                 if(checkRatio(box)){
-                    Log.d("TAG", "OK");
                     plateCandidate = new Mat(adaptiveThresholdCrop, box.boundingRect());
 
                     //IF POINTS SET HAS REQUIRE WHITE PIXELS RATIO INSIDE
@@ -235,7 +203,6 @@ public class Presentation extends AppCompatActivity {
 
         //SHOW RESULTS
         ivRectangle.setImageBitmap(OpenCV.matToBitmap(rectangle));
-        OpenCV.saveImage(fileNumber + "-rectangle.jpg", rectangle);
     }
 
     private boolean checkRatio(RotatedRect candidate) {
@@ -248,8 +215,6 @@ public class Presentation extends AppCompatActivity {
         double area = candidate.size.height * candidate.size.width;
         float r = (float) candidate.size.width / (float) candidate.size.height;
         if (r<1) r = 1/r;
-        Log.d("TAG", "AREA: " + area);
-        Log.d("TAG", "RATIO: " + r);
         return !((area < min || area > max) || (r < rmin || r > rmax));
     }
 
@@ -274,4 +239,5 @@ public class Presentation extends AppCompatActivity {
             return "";
         }
     }
+
 }
