@@ -5,7 +5,8 @@ Computer Vision Plate Recognition App and other examples in OpenCV for Android. 
 The App recognizes vehicle plate in EU standard. App loads photo by name from phone storage and recognizes plate.
 
 ### Screenshots
-Screenshots examples. For more see [imagages/Presentation](images/Presentation) folder.
+Screenshots examples. For more see [images/Presentation](images/Presentation) folder.
+
 <img src="images/App/1.png" width="200"> <img src="images/Presentation/2.png" width="200"> <img src="images/Presentation/3.png" width="200"> <img src="images/Presentation/5.png" width="200">
 
 ### How it is doing?
@@ -37,4 +38,5 @@ LWK2, LWK3 and LWK4 are simple examples which show computer vision techniques in
 
 ### Screenshots
 Screenshots examples. For more see [images](images) folder.
+
 <img src="images/LWK2/2.png" width="200"> <img src="images/LWK3/3.png" width="200"> <img src="images/LWK4/1.png" width="200">
